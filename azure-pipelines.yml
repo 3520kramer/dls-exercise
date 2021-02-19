@@ -1,0 +1,58 @@
+trigger:
+- main
+
+resources:
+- repo: self
+
+variables:
+  tag: '$(Build.BuildId)'
+  python.version: '3.9'
+  ImageName: 'dls_demo:$(Build.BuildId)'
+
+jobs:
+- job: Build
+  displayName: Build
+  pool:
+    vmImage: 'ubuntu-latest'
+  
+  steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: $(python.version)
+      
+#  - script: | 
+#      python -V
+#      pip -V
+#    displayName: 'Show python version'
+
+  - script: |      
+      python -m pip install --upgrade pip
+      python -m pip install -r requirements.txt    
+    displayName: 'Install dependencies'
+  
+  - script: |
+      pytest --junitxml=reports/test-results.xml
+    displayName: 'Run tests'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFiles: 'reports/test-results.xml'
+      testRunTitle: '$(Agent.OS) - $(Build.DefinitionName) - Python $(python.version)'
+    condition: succeededOrFailed()
+
+
+  - task: Docker@2
+    displayName: Build an image
+    inputs:
+      command: build
+      dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
+      tags: |
+        $(tag)
+  - task: Docker@2
+    displayName: Push image to Docker Hub
+    inputs:
+      containerRegistry: 'Docker Hub'
+      repository: 'oliverkramer/dls-demo'
+      command: 'buildAndPush'
+      Dockerfile: '**/Dockerfile'
+  

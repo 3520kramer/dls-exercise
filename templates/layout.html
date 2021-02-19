@@ -1,0 +1,26 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="Home">
+    <meta name="author" content="Oliver Kramer">
+
+
+    <!-- Gives the page a title if it has one-->
+    {% if title %}
+    <title>Demo App - {{title}}</title>
+    {% else %}
+    <title>Demo App</title>
+    {% endif %}
+
+    <link rel="stylesheet" href="...">
+
+</head>
+
+<body>
+    {% block content %}
+    {% endblock %}
+  <script src="..."></script>
+</body>
+</html>
