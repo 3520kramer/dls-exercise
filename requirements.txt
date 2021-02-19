@@ -6,3 +6,7 @@ Jinja2==2.11.3
 MarkupSafe==1.1.1
 pytest==6.2.2
 Werkzeug==1.0.1
+
+
+
+NY_DEPENDENCY==1.0.0
